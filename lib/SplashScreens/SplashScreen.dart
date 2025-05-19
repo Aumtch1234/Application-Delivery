@@ -1,7 +1,10 @@
+import 'package:delivery/Login-register/WellcomeScreen.dart';
+import 'package:delivery/HomeScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import 'package:google_sign_in/google_sign_in.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -11,26 +14,40 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final FlutterSecureStorage _storage = FlutterSecureStorage();
+
   @override
   void initState() {
     super.initState();
-
-    Future.delayed(const Duration(seconds: 3), () {
-      Navigator.pushReplacementNamed(context, '/wellcome');
-    });
+    checkLoginStatus();
   }
+
+  void checkLoginStatus() async {
+  await Future.delayed(const Duration(seconds: 3));
+
+  GoogleSignInAccount? user = await _googleSignIn.signInSilently();
+
+  if (mounted) {
+    if (user != null) {
+      Navigator.pushReplacementNamed(context, '/home', arguments: user);
+    } else {
+      Navigator.pushReplacementNamed(context, '/wellcome');
+    }
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
-    const String motorbike = 'assets/svg/motorcycle.svg'; // เปลี่ยนเป็นชื่อไฟล์ SVG ของคุณ
+    const String motorbike = 'assets/svg/motorcycle.svg';
 
     return Scaffold(
-      backgroundColor: const Color(0xFF34C759), // สีพื้นหลังเขียวสด
+      backgroundColor: const Color(0xFF34C759),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // SVG Icon
             SvgPicture.asset(
               motorbike,
               colorFilter: const ColorFilter.mode(
@@ -41,7 +58,6 @@ class _SplashScreenState extends State<SplashScreen> {
               height: 250,
             ),
             const SizedBox(height: 30),
-            // ข้อความด้านล่าง
             Text(
               'CSC FOOD',
               style: GoogleFonts.prompt(
@@ -58,21 +74,12 @@ class _SplashScreenState extends State<SplashScreen> {
                 fontWeight: FontWeight.w500,
               ),
             ),
-
             const SizedBox(height: 200),
-
-            CircularProgressIndicator(
-              backgroundColor: Color(0xFF34C759),
-              color: Colors.white,
-            ),
-
+            const CircularProgressIndicator(color: Colors.white),
             const SizedBox(height: 10),
             const Text(
               'กำลังโหลด ...',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.white,
-              ),
+              style: TextStyle(fontSize: 16, color: Colors.white),
             ),
           ],
         ),

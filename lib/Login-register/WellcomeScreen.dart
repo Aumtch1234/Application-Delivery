@@ -1,4 +1,4 @@
-import 'package:delivery/Screens/HomeScreen.dart';
+import 'package:delivery/HomeScreen.dart';
 import 'package:delivery/Login-register/RegisterScreen.dart';
 import 'package:delivery/auth/auth_service.dart';
 import 'package:flutter/material.dart';
@@ -177,51 +177,4 @@ class WellcomeScreen extends StatelessWidget {
 // =======================
 // === Google Sign-In ===
 // =======================
-
-final GoogleSignIn _googleSignIn = GoogleSignIn(
-  scopes: ['email', 'profile'],
-  serverClientId:
-      '104415405774-1855b9o21c9d22nks394o9oegdpm7kud.apps.googleusercontent.com',
-);
-
-final storage = new FlutterSecureStorage();
-
-Future<void> _handleSignIn(BuildContext context) async {
-  try {
-    final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-    if (googleUser != null) {
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-      final String? idToken = googleAuth.idToken;
-
-      if (idToken != null) {
-        final response = await http.post(
-          Uri.parse('http://10.0.2.2:3000/api/auth/google/login'),
-          headers: {'Content-Type': 'application/json; charset=UTF-8'},
-          body: jsonEncode({'idToken': idToken}),
-        );
-
-        if (response.statusCode == 200) {
-          final data = jsonDecode(response.body);
-          final String? token = data['token'];
-          if (token != null) {
-            await storage.write(key: 'authToken', value: token);
-
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => Homescreen(user: googleUser),
-              ),
-            );
-          } else {
-            print('ไม่พบ token จาก backend');
-          }
-        } else {
-          print('การตอบกลับจาก backend ไม่ถูกต้อง: ${response.body}');
-        }
-      }
-    }
-  } catch (error) {
-    print('เกิดข้อผิดพลาดขณะ sign-in: $error');
-  }
-}
 
