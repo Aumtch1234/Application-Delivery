@@ -15,7 +15,7 @@ class Homescreen extends StatefulWidget {
 }
 
 class _HomescreenState extends State<Homescreen> {
-  int _page = 0;
+  int _page = 2;
 
   late List<Widget> _pages;
 
@@ -23,9 +23,9 @@ class _HomescreenState extends State<Homescreen> {
   void initState() {
     super.initState();
     _pages = [
-      HomePage(user: widget.user),
       Center(child: Text("ตะกร้าสินค้า", style: TextStyle(fontSize: 24))),
       Center(child: Text("คำสั่งซื้อ", style: TextStyle(fontSize: 24))),
+      HomePage(user: widget.user),
       Center(child: Text("ประวัติคำสั่งซื้อ", style: TextStyle(fontSize: 24))),
       ProfilePage(user: widget.user),
     ];
@@ -48,38 +48,44 @@ class _HomescreenState extends State<Homescreen> {
           });
         },
         items: <Widget>[
+          Icon(Icons.shopping_cart),
+          Icon(Icons.receipt),
           Icon(Icons.home),
-          _buildNavItem('assets/icons/home.png', 'ตะกร้า'),
-          _buildNavItem('assets/icons/home.png', 'คำสั่งซื้อ',),
-          _buildNavItem('assets/icons/home.png', 'ประวัติ'),
-          _buildNavItem('assets/icons/home.png', 'โปรไฟล์'),
+          Icon(Icons.history),
+          Icon(Icons.person),
+
+          // _buildNavItem('assets/icons/home.png', 'ตะกร้า'),
+          // _buildNavItem('assets/icons/home.png', 'คำสั่งซื้อ',),
+          // _buildNavItem('assets/icons/home.png', 'ประวัติ'),
+          // _buildNavItem('assets/icons/home.png', 'โปรไฟล์'),
         ],
       ),
       body: _pages[_page],
     );
   }
 
-  Widget _buildNavItem(String imagePath, String label, {bool isCenter = false}) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          height: isCenter ? 50 : 35,
-          width: isCenter ? 50 : 35,
-          child: Image.asset(imagePath, fit: BoxFit.contain),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            color: isCenter ? Colors.blue : Colors.white,
-            fontSize: isCenter ? 14 : 12,
-            fontWeight: isCenter ? FontWeight.bold : FontWeight.normal,
-          ),
-        ),
-      ],
-    );
-  }
+  // เอาไว้ไว้ถ้าต้องการใช้รูปภาพแทนไอคอน
+  // Widget _buildNavItem(String imagePath, String label, {bool isCenter = false}) {
+  //   return Column(
+  //     mainAxisAlignment: MainAxisAlignment.center,
+  //     children: [
+  //       Container(
+  //         height: isCenter ? 50 : 35,
+  //         width: isCenter ? 50 : 35,
+  //         child: Image.asset(imagePath, fit: BoxFit.contain),
+  //       ),
+  //       const SizedBox(height: 4),
+  //       Text(
+  //         label,
+  //         style: TextStyle(
+  //           color: isCenter ? Colors.blue : Colors.white,
+  //           fontSize: isCenter ? 14 : 12,
+  //           fontWeight: isCenter ? FontWeight.bold : FontWeight.normal,
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   
 }

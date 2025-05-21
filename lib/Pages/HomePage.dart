@@ -63,11 +63,12 @@ class HomePage extends StatelessWidget {
                         ),
                         TextButton(
                           onPressed: () {},
-                          child: const Text('เพิ่มเติม'),
+                          child: Text('เพิ่มเติม', style: TextStyle(color: Color(0xFF34C759), fontWeight: FontWeight.bold)),
                         ),
                       ],
                     ),
                     const SizedBox(height: 8),
+
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 0),
                       child: Row(
@@ -122,6 +123,8 @@ class HomePage extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 16),
+                    const Divider(color: Colors.grey),
+                    const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -134,7 +137,7 @@ class HomePage extends StatelessWidget {
                         ),
                         TextButton(
                           onPressed: () {},
-                          child: const Text('เพิ่มเติม'),
+                          child: const Text('เพิ่มเติม', style: TextStyle(color: Color(0xFF34C759), fontWeight: FontWeight.bold)),
                         ),
                       ],
                     ),
@@ -148,6 +151,8 @@ class HomePage extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 16),
+                    const Divider(color: Colors.grey),
+                    const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -160,7 +165,7 @@ class HomePage extends StatelessWidget {
                         ),
                         TextButton(
                           onPressed: () {},
-                          child: const Text('เพิ่มเติม'),
+                          child: const Text('เพิ่มเติม', style: TextStyle(color: Color(0xFF34C759), fontWeight: FontWeight.bold)),
                         ),
                       ],
                     ),
@@ -188,7 +193,6 @@ class HomePage extends StatelessWidget {
                           50,
                           'assets/menus/yam.png',
                           4.0, // ⭐ เพิ่ม rating
-
                         ),
                         _buildRecommendedMenu(
                           "ก๋วยเตี๋ยว",
@@ -197,7 +201,6 @@ class HomePage extends StatelessWidget {
                           40,
                           'assets/menus/yam.png',
                           4.0, // ⭐ เพิ่ม rating
-
                         ),
                         _buildRecommendedMenu(
                           "ข้าวหมูแดง",
@@ -318,13 +321,13 @@ class HomePage extends StatelessWidget {
           const SizedBox(height: 4),
 
           // 🔽 ชื่อร้านเป็นบรรทัดปกติ
-            Align(
+          Align(
             alignment: Alignment.centerLeft,
             child: Text(
               shop,
               style: const TextStyle(fontSize: 12, color: Colors.grey),
             ),
-            ),
+          ),
 
           const Spacer(), // ดันข้อมูลให้อยู่ล่าง
           // ⏱️ เวลากับราคา
