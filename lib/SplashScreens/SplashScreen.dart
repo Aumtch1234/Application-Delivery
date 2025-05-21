@@ -1,8 +1,5 @@
-import 'package:delivery/Login-register/WellcomeScreen.dart';
-import 'package:delivery/HomeScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -15,7 +12,6 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
-  final FlutterSecureStorage _storage = FlutterSecureStorage();
 
   @override
   void initState() {

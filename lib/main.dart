@@ -1,6 +1,6 @@
 import 'package:delivery/Login-register/RegisterScreen.dart';
 import 'package:delivery/Login-register/WellcomeScreen.dart';
-import 'package:delivery/HomeScreen.dart';
+import 'package:delivery/Login-register/HomeScreen.dart';
 import 'package:delivery/SplashScreens/SplashScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
