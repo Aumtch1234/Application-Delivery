@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -16,7 +19,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
 
   Future<void> _selectDate(BuildContext context) async {
@@ -32,6 +36,82 @@ class _RegisterScreenState extends State<RegisterScreen> {
       });
     }
   }
+
+Future<void> _registerUser() async {
+    if (_passwordController.text != _confirmPasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('รหัสผ่านไม่ตรงกัน')),
+      );
+      return;
+    }
+    if (_gender == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('กรุณาเลือกเพศ')),
+      );
+      return;
+    }
+    if (_selectedDate == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('กรุณาเลือกวันเกิด')),
+      );
+      return;
+    }
+    if (_selectedImage == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('กรุณาเลือกรูปโปรไฟล์')),
+      );
+      return;
+    }
+
+    final url = Uri.parse('http://10.0.2.2:3000/api/sign/register');
+
+    Map<String, dynamic> body = {
+      'name': _nameController.text,
+      'email': _emailController.text,
+      'password': _passwordController.text,
+      'phone': _phoneController.text,
+      'gender': _gender, // 0,1,2 ตามที่เลือก
+      'birthdate': _selectedDate!.toIso8601String(),
+      'photo_url': _selectedImage,
+    };
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(body),
+      );
+
+      if (response.statusCode == 200) {
+        // สมมติ response body มี success message หรือ token
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('สมัครสมาชิกสำเร็จ')),
+        );
+        // นำทางไปหน้าถัดไป หรือเคลียร์ฟอร์ม
+      } else {
+        // แสดง error จาก server
+        final resBody = jsonDecode(response.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('สมัครสมาชิกไม่สำเร็จ: ${resBody['message'] ?? 'Unknown error'}')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('เกิดข้อผิดพลาด: $e')),
+      );
+    }
+}
+
+  // รูปที่ใช้ให้เลือก
+  final List<String> _imageOptions = [
+    'assets/avatars/kai.png',
+    'assets/avatars/kai copy.png',
+    'assets/avatars/kai copy 2.png',
+    'assets/avatars/kai copy 3.png',
+    'assets/avatars/kai copy 4.png',
+    'assets/avatars/kai.png',
+  ];
+  String? _selectedImage;
 
   @override
   Widget build(BuildContext context) {
@@ -57,14 +137,98 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   children: [
                     const Text(
                       'โปรดกรอกข้อมูลส่วนตัว',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 8),
-                    Container(height: 1, width: double.infinity, color: const Color(0xFFE5E5EA)),
+                    Container(
+                      height: 1,
+                      width: double.infinity,
+                      color: const Color(0xFFE5E5EA),
+                    ),
                   ],
                 ),
               ),
               const SizedBox(height: 24),
+              // แสดงรายการรูปโปรไฟล์ให้เลือก
+              Padding(
+                padding: const EdgeInsets.only(top: 12, bottom: 8),
+                child: Text(
+                  "เลือกรูปโปรไฟล์ของคุณ",
+                  style: const TextStyle(fontSize: 14),
+                ),
+              ),
+              SizedBox(
+                height: 100,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _imageOptions.length,
+                  itemBuilder: (context, index) {
+                    String imagePath = _imageOptions[index];
+                    bool isSelected = _selectedImage == imagePath;
+
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedImage = imagePath;
+                        });
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 8),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color:
+                                isSelected
+                                    ? const Color(0xFF34C759)
+                                    : Colors.grey.shade300,
+                            width: isSelected ? 4 : 2,
+                          ),
+                          boxShadow:
+                              isSelected
+                                  ? [
+                                    BoxShadow(
+                                      color: Colors.green.withOpacity(0.5),
+                                      blurRadius: 12,
+                                      spreadRadius: 2,
+                                      offset: const Offset(0, 3),
+                                    ),
+                                  ]
+                                  : [],
+                        ),
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            CircleAvatar(
+                              backgroundImage: AssetImage(imagePath),
+                              radius: 40,
+                            ),
+                            if (isSelected)
+                              const Positioned(
+                                bottom: 0,
+                                right: 0,
+                                child: CircleAvatar(
+                                  radius: 12,
+                                  backgroundColor: Colors.white,
+                                  child: Icon(
+                                    Icons.check_circle,
+                                    color: Color(0xFF34C759),
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
               _buildLabel("ชื่อ - นามสกุล *"),
               _buildTextField(_nameController, 'ชื่อ - นามสกุล', false),
               _buildLabel("อีเมลของคุณ *"),
@@ -72,13 +236,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
               _buildLabel("รหัสผ่านของคุณ"),
               _buildTextField(_passwordController, 'รหัสผ่าน', true),
               _buildLabel("ยืนยันรหัสผ่านของคุณ"),
-              _buildTextField(_confirmPasswordController, 'กรุณณายืนยันรหัสผ่านของคุณอีกครั้ง', true),
+              _buildTextField(
+                _confirmPasswordController,
+                'กรุณณายืนยันรหัสผ่านของคุณอีกครั้ง',
+                true,
+              ),
               _buildLabel('วัน เดือน ปีเกิด'),
               InkWell(
                 onTap: () => _selectDate(context),
                 child: Container(
                   margin: const EdgeInsets.only(top: 8, bottom: 16),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 16,
+                  ),
                   decoration: BoxDecoration(
                     border: Border.all(color: const Color(0xFFE5E5EA)),
                     borderRadius: BorderRadius.circular(10),
@@ -92,7 +263,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ? 'วัน เดือน ปีเกิด'
                             : '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}',
                         style: TextStyle(
-                          color: _selectedDate == null ? Colors.grey : Colors.black,
+                          color:
+                              _selectedDate == null
+                                  ? Colors.grey
+                                  : Colors.black,
                         ),
                       ),
                       const Icon(Icons.calendar_today, color: Colors.grey),
@@ -109,7 +283,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ],
               ),
               _buildLabel("เบอร์โทรศัพท์มือถือ  *"),
-              _buildTextField(_phoneController, 'เบอร์โทรศัพท์มือถือ', false, keyboardType: TextInputType.phone),
+              _buildTextField(
+                _phoneController,
+                'เบอร์โทรศัพท์มือถือ',
+                false,
+                keyboardType: TextInputType.phone,
+              ),
               const SizedBox(height: 16),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -126,7 +305,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   const Expanded(
                     child: Padding(
                       padding: EdgeInsets.only(top: 12.0),
-                      child: Text('ยินยอมให้เข้าถึงข้อมูลและเข้าใช้บริการบางส่วน'),
+                      child: Text(
+                        'ยินยอมให้เข้าถึงข้อมูลและเข้าใช้บริการบางส่วน',
+                      ),
                     ),
                   ),
                 ],
@@ -144,12 +325,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   onPressed: () {
                     if (_formKey.currentState!.validate() && _agree) {
-                      // ดำเนินการสมัครสมาชิก
+                      _registerUser();
+                    } else if (!_agree) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('กรุณายินยอมเงื่อนไข')),
+                      );
                     }
                   },
                   child: const Text(
                     'สมัครสมาชิก',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
